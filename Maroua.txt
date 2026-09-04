@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pharma-Link Maroua</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --green:#00875A;--green-dark:#005C3B;--green-light:#E3FCEF;
+  --gold:#FFAB00;--gold-light:#FFF8E1;
+  --red:#DE350B;--red-light:#FFEBE6;
+  --blue:#0052CC;--blue-light:#DEEBFF;
+  --purple:#6554C0;--purple-light:#EAE6FF;
+  --white:#fff;--gray-bg:#F4F5F7;--gray-text:#6B778C;--dark:#172B4D;
+  --radius:12px;--shadow:0 2px 12px rgba(0,0,0,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--gray-bg);color:var(--dark);min-height:100vh;}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;background:linear-gradient(135deg,var(--green-dark),var(--green));display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .7s ease;}
+#splash.hidden{opacity:0;pointer-events:none;}
+.splash-logo{font-size:3rem;font-weight:900;color:#fff;letter-spacing:-1px;}
+.splash-logo span{color:var(--gold);}
+.splash-sub{color:rgba(255,255,255,.8);margin-top:8px;font-size:1rem;}
+.splash-stats{display:flex;gap:24px;margin-top:24px;}
+.splash-stat{text-align:center;color:#fff;}
+.splash-stat .num{font-size:1.8rem;font-weight:800;color:var(--gold);}
+.splash-stat .lbl{font-size:.72rem;opacity:.8;}
+
+/* HEADER */
+header{background:var(--green);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.logo{font-size:1.25rem;font-weight:900;color:#fff;}
+.logo span{color:var(--gold);}
+.hdr-right{display:flex;align-items:center;gap:8px;}
+.hdr-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.45);color:#fff;font-weight:700;font-size:.78rem;padding:5px 12px;border-radius:20px;cursor:pointer;transition:.2s;white-space:nowrap;}
+.hdr-btn:hover{background:rgba(255,255,255,.35);}
+.hdr-btn.gold{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--green-dark) 0%,var(--green) 100%);padding:28px 16px 22px;text-align:center;color:#fff;}
+.hero h1{font-size:1.5rem;font-weight:800;margin-bottom:5px;}
+.hero p{font-size:.88rem;color:rgba(255,255,255,.85);margin-bottom:16px;}
+.search-wrap{max-width:540px;margin:0 auto;display:flex;gap:7px;}
+#search-input{flex:1;padding:11px 14px;border-radius:8px;border:none;font-size:.95rem;outline:none;}
+#search-btn{background:var(--gold);color:var(--dark);border:none;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer;font-size:.9rem;}
+
+/* STATS BAR */
+.stats-bar{background:#fff;display:flex;border-bottom:1px solid #e0e0e0;}
+.stat-item{flex:1;padding:10px 8px;text-align:center;border-right:1px solid #e0e0e0;}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-size:1.1rem;font-weight:800;color:var(--green);}
+.stat-lbl{font-size:.65rem;color:var(--gray-text);margin-top:1px;}
+
+/* TABS */
+.tabs{display:flex;gap:7px;padding:12px 16px 0;overflow-x:auto;scrollbar-width:none;background:#fff;border-bottom:1px solid #e8e8e8;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{background:transparent;border:none;border-bottom:3px solid transparent;border-radius:0;padding:8px 14px 10px;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;color:var(--gray-text);transition:.2s;}
+.tab-btn.active{border-bottom-color:var(--green);color:var(--green);}
+.tab-btn:hover{color:var(--green);}
+
+/* MAIN */
+main{padding:12px 16px 100px;max-width:960px;margin:0 auto;}
+.section-title{font-size:.95rem;font-weight:700;color:var(--dark);margin:16px 0 10px;display:flex;align-items:center;gap:8px;}
+.section-title::after{content:'';flex:1;height:1px;background:#e0e0e0;}
+
+/* LIGNE DIRECTE */
+.ligne-directe{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:var(--radius);padding:16px;margin-bottom:14px;color:#fff;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.ligne-directe-num{font-size:2.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;line-height:1;}
+.ligne-directe-info{flex:1;min-width:160px;}
+.ligne-directe-info h3{font-size:1rem;font-weight:800;margin-bottom:4px;}
+.ligne-directe-info p{font-size:.78rem;color:rgba(255,255,255,.8);line-height:1.5;}
+.ligne-directe-btn{background:var(--gold);color:var(--dark);border:none;border-radius:10px;padding:12px 20px;font-weight:800;font-size:1rem;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;text-decoration:none;}
+.ligne-directe-btn:hover{background:#e09900;}
+.pulse{animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+
+/* QR CARD */
+.qr-card{background:#fff;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
+.qr-info{flex:1;min-width:160px;}
+.qr-info h4{font-weight:800;font-size:.95rem;margin-bottom:4px;}
+.qr-info p{font-size:.78rem;color:var(--gray-text);line-height:1.5;}
+#qrcode-container canvas,#qrcode-container img{border-radius:8px;border:3px solid var(--green-light);}
+
+/* URGENCE BANNER */
+.urgence-banner{background:var(--red);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;color:#fff;}
+.urgence-banner h3{font-size:.95rem;font-weight:800;margin-bottom:8px;}
+.urgence-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.urgence-card{background:rgba(255,255,255,.15);border-radius:8px;padding:10px 12px;cursor:pointer;transition:.2s;}
+.urgence-card:hover{background:rgba(255,255,255,.25);}
+.urgence-num{font-size:1.1rem;font-weight:800;}
+.urgence-lbl{font-size:.72rem;opacity:.9;margin-top:2px;}
+
+/* GARDE CARD */
+.garde-card{background:linear-gradient(135deg,var(--gold-light),#fff);border:2px solid var(--gold);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;}
+.garde-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.garde-badge{background:var(--gold);color:var(--dark);font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:20px;}
+.garde-name{font-weight:800;font-size:1rem;}
+.garde-meta{font-size:.8rem;color:var(--gray-text);margin-top:3px;}
+.garde-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+
+/* MAP */
+#map{width:100%;height:360px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:10px;}
+
+/* PHARMACY GRID */
+.pharmacy-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:600px){.pharmacy-grid{grid-template-columns:1fr 1fr;}}
+.pharmacy-card{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);border-left:4px solid var(--green);transition:.15s;}
+.pharmacy-card.closed-card{border-left-color:var(--gray-text);}
+.pharmacy-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.13);}
+.pharm-name{font-weight:800;font-size:.92rem;}
+.pharm-meta{font-size:.77rem;color:var(--gray-text);margin-top:4px;line-height:1.5;}
+.pharm-status{font-size:.74rem;font-weight:700;margin-top:6px;}
+.open-txt{color:var(--green);}
+.closed-txt{color:var(--red);}
+.pharm-stars{color:var(--gold);font-size:.85rem;margin-top:4px;}
+.pharm-actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;}
+.btn-sm{padding:5px 10px;border-radius:6px;font-size:.74rem;font-weight:700;border:none;cursor:pointer;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-gold{background:var(--gold);color:var(--dark);}
+.btn-blue{background:var(--blue);color:#fff;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-purple{background:var(--purple);color:#fff;}
+.btn-outline{background:#fff;color:var(--dark);border:1.5px solid #ddd;}
+.btn-sm:hover{opacity:.85;}
+
+/* MED LIST */
+.med-item{background:#fff;border-radius:var(--radius);padding:12px 14px;margin-bottom:9px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.med-info h4{font-size:.9rem;font-weight:700;}
+.med-info p{font-size:.78rem;color:var(--gray-text);margin-top:2px;}
+.med-price{font-weight:800;color:var(--green);font-size:.92rem;white-space:nowrap;}
+.badge-ok{background:var(--green-light);color:var(--green);font-size:.7rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:4px;display:inline-block;}
+.badge-no{background:var(--red-light);color:var(--red);font-size:.7rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:4px;display:inline-block;}
+.badge-garde{background:var(--gold-light);color:#7a5800;font-size:.7rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:4px;display:inline-block;}
+
+/* TIPS */
+.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(min-width:600px){.tips-grid{grid-template-columns:repeat(3,1fr);}}
+.tip-card{background:var(--gold-light);border-radius:var(--radius);padding:12px;border-left:3px solid var(--gold);}
+.tip-icon{font-size:1.35rem;margin-bottom:4px;}
+.tip-title{font-weight:700;font-size:.82rem;}
+.tip-text{font-size:.74rem;color:var(--gray-text);margin-top:3px;line-height:1.4;}
+
+/* ABOUT */
+.about-box{background:var(--green-light);border-radius:var(--radius);padding:16px;border:1px solid #b3e6d0;margin-bottom:14px;}
+.about-box h3{color:var(--green-dark);font-size:.92rem;font-weight:800;margin-bottom:6px;}
+.about-box p{font-size:.83rem;line-height:1.6;}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.dash-card{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);text-align:center;}
+.dash-num{font-size:1.6rem;font-weight:800;color:var(--green);}
+.dash-lbl{font-size:.72rem;color:var(--gray-text);margin-top:3px;}
+.dash-section{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:12px;}
+.dash-section h4{font-size:.88rem;font-weight:700;margin-bottom:10px;color:var(--dark);}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-label{font-size:.83rem;font-weight:600;}
+.toggle-desc{font-size:.72rem;color:var(--gray-text);}
+.toggle{position:relative;width:42px;height:24px;cursor:pointer;}
+.toggle input{opacity:0;width:0;height:0;}
+.slider{position:absolute;inset:0;background:#ddd;border-radius:24px;transition:.3s;}
+.slider:before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;}
+input:checked+.slider{background:var(--green);}
+input:checked+.slider:before{transform:translateX(18px);}
+.stock-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:.82rem;}
+.stock-row:last-child{border-bottom:none;}
+.stock-badge-ok{background:var(--green-light);color:var(--green);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:10px;cursor:pointer;}
+.stock-badge-no{background:var(--red-light);color:var(--red);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:10px;cursor:pointer;}
+
+/* REVIEWS */
+.review-card{background:#fff;border-radius:var(--radius);padding:13px;box-shadow:var(--shadow);margin-bottom:9px;}
+.review-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.reviewer-name{font-weight:700;font-size:.85rem;}
+.review-stars{color:var(--gold);font-size:.85rem;}
+.review-pharm{font-size:.75rem;color:var(--gray-text);}
+.review-text{font-size:.82rem;line-height:1.5;color:var(--dark);}
+.review-date{font-size:.7rem;color:var(--gray-text);margin-top:4px;}
+.rating-bar{margin-bottom:14px;}
+.rating-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:.78rem;}
+.rating-bar-fill{height:8px;border-radius:4px;background:var(--gold);transition:.3s;}
+.rating-bar-bg{flex:1;height:8px;border-radius:4px;background:#f0f0f0;overflow:hidden;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:14px;}
+.modal-overlay.hidden{display:none!important;}
+.modal-box{background:#fff;border-radius:16px;padding:22px 18px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:92vh;overflow-y:auto;}
+.modal-box h3{font-size:1.1rem;font-weight:800;margin-bottom:4px;}
+.modal-sub{font-size:.8rem;color:var(--gray-text);margin-bottom:16px;}
+.pay-option{border:2px solid #e0e0e0;border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.2s;margin-bottom:9px;}
+.pay-option:hover{border-color:var(--green);background:var(--green-light);}
+.pay-icon{font-size:1.6rem;}
+.pay-label{font-weight:700;font-size:.9rem;}
+.pay-desc{font-size:.74rem;color:var(--gray-text);margin-top:2px;}
+.modal-close{margin-top:12px;width:100%;padding:10px;border-radius:8px;border:2px solid #e0e0e0;background:#fff;font-weight:700;cursor:pointer;font-size:.86rem;}
+.modal-close:hover{background:var(--gray-bg);}
+.reg-type-choice{display:flex;gap:10px;margin-bottom:18px;}
+.reg-type-btn{flex:1;padding:14px 8px;border-radius:10px;border:2px solid #e0e0e0;background:#fff;cursor:pointer;text-align:center;transition:.2s;font-weight:700;font-size:.86rem;}
+.reg-type-btn:hover,.reg-type-btn.selected{border-color:var(--green);background:var(--green-light);color:var(--green);}
+.reg-type-icon{font-size:1.8rem;display:block;margin-bottom:5px;}
+.reg-form{display:none;flex-direction:column;gap:11px;}
+.reg-form.visible{display:flex;}
+.form-group{display:flex;flex-direction:column;gap:3px;}
+.form-group label{font-size:.77rem;font-weight:700;}
+.form-group input,.form-group select,.form-group textarea{padding:9px 12px;border-radius:7px;border:1.5px solid #ddd;font-size:.87rem;outline:none;transition:.2s;font-family:inherit;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--green);}
+.form-group textarea{resize:vertical;min-height:65px;}
+.btn-submit{background:var(--green);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:.92rem;cursor:pointer;transition:.2s;}
+.btn-submit:hover{background:var(--green-dark);}
+.form-divider{display:flex;align-items:center;gap:8px;color:var(--gray-text);font-size:.75rem;}
+.form-divider::before,.form-divider::after{content:'';flex:1;height:1px;background:#e0e0e0;}
+.success-box{text-align:center;padding:16px 8px;}
+.success-box .check{font-size:2.8rem;margin-bottom:8px;}
+.success-box h4{font-size:1.05rem;font-weight:800;color:var(--green);}
+.success-box p{font-size:.82rem;color:var(--gray-text);margin-top:5px;}
+
+/* COMMANDE MODAL */
+.med-select-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.med-select-item{border:2px solid #e0e0e0;border-radius:8px;padding:9px;cursor:pointer;font-size:.78rem;font-weight:600;transition:.2s;text-align:center;}
+.med-select-item.selected{border-color:var(--green);background:var(--green-light);color:var(--green);}
+.med-select-item:hover{border-color:var(--green);}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;box-shadow:0 -2px 12px rgba(0,0,0,.10);z-index:200;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 0 6px;cursor:pointer;color:var(--gray-text);font-size:.62rem;font-weight:600;border:none;background:none;transition:.2s;position:relative;}
+.nav-item.active,.nav-item:hover{color:var(--green);}
+.nav-icon{font-size:1.2rem;margin-bottom:2px;}
+.nav-badge{position:absolute;top:5px;right:calc(50% - 16px);background:var(--red);color:#fff;font-size:.58rem;font-weight:800;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;}
+
+/* SEARCH RESULTS */
+#search-results{margin-bottom:4px;}
+.sr-item{background:#fff;border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+
+/* TOAST */
+#toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:10px 20px;border-radius:24px;font-size:.82rem;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;}
+.hidden{display:none!important;}
+
+/* NOTIF panel */
+.notif-item{background:#fff;border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;border-left:4px solid var(--green);}
+.notif-icon{font-size:1.3rem;}
+.notif-title{font-size:.85rem;font-weight:700;}
+.notif-msg{font-size:.78rem;color:var(--gray-text);margin-top:2px;}
+.notif-time{font-size:.7rem;color:var(--gray-text);margin-top:3px;}
+
+/* DASHBOARD LOGIN */
+.dash-login{background:#fff;border-radius:var(--radius);padding:32px 24px;box-shadow:var(--shadow);max-width:360px;margin:40px auto;text-align:center;}
+.dash-login .lock-icon{font-size:3rem;margin-bottom:12px;}
+.dash-login h3{font-size:1.1rem;font-weight:800;color:var(--dark);margin-bottom:6px;}
+.dash-login p{font-size:.82rem;color:var(--gray-text);margin-bottom:20px;}
+.dash-login input{width:100%;padding:11px 14px;border-radius:8px;border:1.5px solid #ddd;font-size:1rem;outline:none;text-align:center;letter-spacing:3px;font-weight:700;transition:.2s;font-family:inherit;}
+.dash-login input:focus{border-color:var(--green);}
+.dash-login .err{color:var(--red);font-size:.78rem;margin-top:8px;display:none;}
+.dash-login .btn-login{width:100%;margin-top:12px;background:var(--green);color:#fff;border:none;border-radius:8px;padding:12px;font-weight:800;font-size:.95rem;cursor:pointer;transition:.2s;}
+.dash-login .btn-login:hover{background:var(--green-dark);}
+.dash-logout{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.btn-logout{background:var(--red-light);color:var(--red);border:none;border-radius:8px;padding:7px 14px;font-size:.78rem;font-weight:700;cursor:pointer;}
+.btn-logout:hover{background:#f5c6bc;}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <svg width="64" height="44" viewBox="0 0 3 2" style="margin-bottom:14px">
+    <rect width="1" height="2" fill="#007A5E"/>
+    <rect x="1" width="1" height="2" fill="#CE1126"/>
+    <rect x="2" width="1" height="2" fill="#FCD116"/>
+    <polygon points="1.5,0.6 1.62,0.95 1.98,0.95 1.69,1.15 1.8,1.5 1.5,1.3 1.2,1.5 1.31,1.15 1.02,0.95 1.38,0.95" fill="#FCD116"/>
+  </svg>
+  <div class="splash-logo">Pharma<span>-Link</span></div>
+  <div class="splash-sub">Maroua · Extrême-Nord · Cameroun</div>
+  <div class="splash-stats">
+    <div class="splash-stat"><div class="num">15</div><div class="lbl">Pharmacies</div></div>
+    <div class="splash-stat"><div class="num">13</div><div class="lbl">Médicaments</div></div>
+    <div class="splash-stat"><div class="num">24/7</div><div class="lbl">Disponible</div></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">Pharma<span>-Link</span></div>
+  <div class="hdr-right">
+    <svg width="24" height="16" viewBox="0 0 3 2">
+      <rect width="1" height="2" fill="#007A5E"/>
+      <rect x="1" width="1" height="2" fill="#CE1126"/>
+      <rect x="2" width="1" height="2" fill="#FCD116"/>
+      <polygon points="1.5,0.6 1.62,0.95 1.98,0.95 1.69,1.15 1.8,1.5 1.5,1.3 1.2,1.5 1.31,1.15 1.02,0.95 1.38,0.95" fill="#FCD116"/>
+    </svg>
+    <button id="lang-toggle" class="hdr-btn" onclick="window.toggleLang()">EN</button>
+    <button class="hdr-btn gold" onclick="window.openRegisterModal()">📝 S'inscrire</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <h1 id="hero-title">Trouvez vos médicaments à Maroua</h1>
+  <p id="hero-sub">Pharmacies · Gardes · Livraison · Paiement mobile</p>
+  <div class="search-wrap">
+    <input id="search-input" type="text" placeholder="Paracétamol, Amoxicilline…" oninput="window.doSearch()"/>
+    <button id="search-btn" onclick="window.doSearch()">🔍 Chercher</button>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num" id="stat-open">10</div><div class="stat-lbl" id="sl1">Ouvertes</div></div>
+  <div class="stat-item"><div class="stat-num">15</div><div class="stat-lbl" id="sl2">Pharmacies</div></div>
+  <div class="stat-item"><div class="stat-num">13</div><div class="stat-lbl" id="sl3">Médicaments</div></div>
+  <div class="stat-item"><div class="stat-num" id="stat-reviews">8</div><div class="stat-lbl" id="sl4">Avis</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="window.showTab('accueil',this)">🏠 Accueil</button>
+  <button class="tab-btn" onclick="window.showTab('carte',this)">🗺️ Carte</button>
+  <button class="tab-btn" onclick="window.showTab('pharmacies',this)">🏥 Pharmacies</button>
+  <button class="tab-btn" onclick="window.showTab('medicaments',this)">💊 Médicaments</button>
+  <button class="tab-btn" onclick="window.showTab('avis',this)">⭐ Avis</button>
+  <button class="tab-btn" onclick="window.showTab('dashboard',this)">📊 Dashboard</button>
+  <button class="tab-btn" onclick="window.showTab('conseils',this)">🌿 Conseils</button>
+  <button class="tab-btn" onclick="window.showTab('apropos',this)">ℹ️ À propos</button>
+</div>
+
+<main>
+  <div id="search-results"></div>
+
+  <!-- ACCUEIL -->
+  <div id="tab-accueil">
+  <!-- LIGNE DIRECTE 1200 -->
+  <div class="ligne-directe">
+    <div class="ligne-directe-num pulse">1200</div>
+    <div class="ligne-directe-info">
+      <h3>📞 Ligne directe Pharma-Link</h3>
+      <p>Vous avez du mal à utiliser le site ?<br>Appelez le <b>1200</b> gratuitement.<br>Un conseiller vous aide à trouver vos médicaments.<br><span style="color:var(--gold)">Disponible 7j/7 · 7h – 21h</span></p>
+    </div>
+    <a class="ligne-directe-btn" href="tel:1200">📞 Appeler le 1200</a>
+  </div>
+
+    <!-- QR CODE -->
+    <div class="qr-card">
+      <div id="qrcode-container"></div>
+      <div class="qr-info">
+        <h4>📱 Accéder à Pharma-Link</h4>
+        <p>Scannez ce QR code avec votre téléphone pour ouvrir directement l'application.<br><br>Partagez-le avec vos proches, les pharmacies, ou affichez-le dans votre pharmacie !</p>
+        <button class="btn-sm btn-green" style="margin-top:8px;font-size:.78rem" onclick="window.downloadQR()">⬇️ Télécharger le QR</button>
+      </div>
+    </div>
+
+    <!-- URGENCE -->
+    <div class="urgence-banner">
+      <h3>🚨 Numéros d'urgence Maroua</h3>
+      <div class="urgence-grid">
+        <div class="urgence-card" onclick="window.callNum('15')"><div class="urgence-num">15</div><div class="urgence-lbl">SAMU / Urgences</div></div>
+        <div class="urgence-card" onclick="window.callNum('+237 222 291 401')"><div class="urgence-num">CHR Maroua</div><div class="urgence-lbl">+237 222 291 401</div></div>
+        <div class="urgence-card" onclick="window.callNum('18')"><div class="urgence-num">18</div><div class="urgence-lbl">Pompiers</div></div>
+        <div class="urgence-card" onclick="window.callNum('117')"><div class="urgence-num">117</div><div class="urgence-lbl">Police / Gendarmerie</div></div>
+      </div>
+    </div>
+    <!-- GARDE -->
+    <div class="section-title">🌙 Pharmacie de garde ce soir</div>
+    <div class="garde-card">
+      <div class="garde-header">
+        <span class="garde-badge">DE GARDE</span>
+        <span style="font-size:.8rem;color:var(--gray-text)" id="garde-date"></span>
+      </div>
+      <div class="garde-name" id="garde-name">Pharmacie Centrale Maroua</div>
+      <div class="garde-meta" id="garde-meta">📍 Centre-ville &nbsp;|&nbsp; ⏰ 21h – 7h &nbsp;|&nbsp; 📞 +237 677 400 500</div>
+      <div class="garde-actions">
+        <a class="btn-sm btn-green" id="garde-tel-btn" href="tel:+237677400500">📞 Appeler</a>
+        <a class="btn-sm btn-gold" id="garde-wa-btn" href="https://wa.me/237677400500" target="_blank">💬 WhatsApp</a>
+        <button class="btn-sm btn-red" onclick="window.showTab('carte',null)">🗺️ Voir sur carte</button>
+      </div>
+    </div>
+    <!-- PHARMACIES OUVERTES -->
+    <div class="section-title">🟢 Pharmacies ouvertes maintenant</div>
+    <div class="pharmacy-grid" id="open-pharmacy-list"></div>
+  </div>
+
+  <!-- CARTE -->
+  <div id="tab-carte" class="hidden">
+    <div class="section-title">🗺️ Carte des pharmacies de Maroua</div>
+    <div id="map"></div>
+    <p style="font-size:.75rem;color:var(--gray-text);text-align:center;margin-top:6px">🟢 Ouvert &nbsp; 🔴 Fermé &nbsp; 🔵 Vous êtes ici</p>
+  </div>
+
+  <!-- PHARMACIES -->
+  <div id="tab-pharmacies" class="hidden">
+    <div class="section-title" id="pharm-section-title">🏥 Toutes les pharmacies</div>
+    <div class="pharmacy-grid" id="pharmacy-list"></div>
+  </div>
+
+  <!-- MEDICAMENTS -->
+  <div id="tab-medicaments" class="hidden">
+    <div class="section-title">💊 Médicaments disponibles</div>
+    <div id="med-list"></div>
+  </div>
+
+  <!-- AVIS -->
+  <div id="tab-avis" class="hidden">
+    <div class="section-title">⭐ Avis des patients</div>
+    <div style="background:#fff;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:14px;">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:10px;">Note globale des pharmacies</div>
+      <div class="rating-bar">
+        <div class="rating-bar-row">5⭐ <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:70%"></div></div> 70%</div>
+        <div class="rating-bar-row">4⭐ <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:20%"></div></div> 20%</div>
+        <div class="rating-bar-row">3⭐ <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:7%"></div></div> 7%</div>
+        <div class="rating-bar-row">2⭐ <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:3%"></div></div> 3%</div>
+        <div class="rating-bar-row">1⭐ <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:0%"></div></div> 0%</div>
+      </div>
+      <button class="btn-submit" style="font-size:.82rem;padding:9px" onclick="window.openReviewModal()">✍️ Laisser un avis</button>
+    </div>
+    <div id="reviews-list"></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="tab-dashboard" class="hidden">
+    <div class="section-title">📊 Tableau de bord Pharmacie</div>
+
+    <!-- ECRAN LOGIN -->
+    <div id="dash-login-screen" class="dash-login">
+      <div class="lock-icon">🔐</div>
+      <h3>Accès réservé</h3>
+      <p>Entrez votre mot de passe pour accéder au tableau de bord de votre pharmacie</p>
+      <input type="password" id="dash-password-input" placeholder="••••••••••" onkeydown="if(event.key==='Enter') window.dashLogin()"/>
+      <div class="err" id="dash-err">❌ Mot de passe incorrect. Réessayez.</div>
+      <button class="btn-login" onclick="window.dashLogin()">🔓 Accéder au Dashboard</button>
+    </div>
+
+    <!-- CONTENU DASHBOARD (caché par défaut) -->
+    <div id="dash-content" style="display:none">
+      <div class="dash-logout">
+        <button class="btn-logout" onclick="window.dashLogout()">🔒 Se déconnecter</button>
+      </div>
+    <div style="background:var(--blue-light);border:1.5px solid var(--blue);border-radius:var(--radius);padding:10px 14px;font-size:.8rem;color:var(--blue);font-weight:600;margin-bottom:12px;">
+      🔐 Espace réservé aux pharmacies inscrites sur Pharma-Link
+    </div>
+    <div class="dash-grid">
+      <div class="dash-card"><div class="dash-num">127</div><div class="dash-lbl">Vues ce mois</div></div>
+      <div class="dash-card"><div class="dash-num">23</div><div class="dash-lbl">Commandes reçues</div></div>
+      <div class="dash-card"><div class="dash-num">4.7⭐</div><div class="dash-lbl">Note moyenne</div></div>
+      <div class="dash-card"><div class="dash-num">8</div><div class="dash-lbl">Avis clients</div></div>
+    </div>
+    <div class="dash-section">
+      <h4>⚙️ Paramètres de ma pharmacie</h4>
+      <div class="toggle-row">
+        <div><div class="toggle-label">🟢 Ouvert maintenant</div><div class="toggle-desc">Visible comme "ouvert" sur la carte</div></div>
+        <label class="toggle"><input type="checkbox" checked onchange="window.showToastMsg('Statut mis à jour ✅')"><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">🌙 Pharmacie de garde</div><div class="toggle-desc">Activer le mode garde cette nuit</div></div>
+        <label class="toggle"><input type="checkbox" onchange="window.showToastMsg('Mode garde activé 🌙')"><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">🛵 Livraison à domicile</div><div class="toggle-desc">Proposer la livraison</div></div>
+        <label class="toggle"><input type="checkbox" onchange="window.showToastMsg('Livraison mise à jour ✅')"><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">📲 Notifications WhatsApp</div><div class="toggle-desc">Recevoir les commandes sur WhatsApp</div></div>
+        <label class="toggle"><input type="checkbox" checked onchange="window.showToastMsg('Notifications mises à jour ✅')"><span class="slider"></span></label>
+      </div>
+    </div>
+    <div class="dash-section">
+      <h4>💊 Gérer mon stock</h4>
+      <div id="stock-list"></div>
+    </div>
+    <div class="dash-section">
+      <h4>📋 Dernières commandes reçues</h4>
+      <div id="orders-list"></div>
+    </div>
+    </div><!-- fin dash-content -->
+  </div><!-- fin tab-dashboard -->
+
+  <!-- CONSEILS -->
+  <div id="tab-conseils" class="hidden">
+    <div class="section-title">🌿 Conseils pharmaceutiques</div>
+    <div class="tips-grid" id="tips-list"></div>
+  </div>
+
+  <!-- A PROPOS -->
+  <div id="tab-apropos" class="hidden">
+    <div class="section-title">ℹ️ À propos de Pharma-Link</div>
+    <div class="about-box">
+      <h3>Notre mission</h3>
+      <p id="about-text">Pharma-Link Maroua est une plateforme numérique qui connecte les habitants de Maroua et de l'Extrême-Nord avec les pharmacies locales. Notre objectif est de rendre l'accès aux médicaments plus simple, plus rapide et plus fiable pour toute la communauté.</p><p style="margin-top:10px;font-weight:800;color:#00875A;font-size:.9rem;">Fondateur &amp; Directeur de Pharma-Link Maroua : Boubakary Adamou</p>
+    </div>
+    <div class="about-box" style="margin-top:10px;background:#f0f4ff;border-color:#c0d0f7;">
+      <h3 style="color:#0052CC">👤 Fondateur</h3>
+      <p><b>Boubakary Adamou</b><br>Fondateur &amp; Directeur de Pharma-Link Maroua<br>Entrepreneur numérique · Santé digitale · Extrême-Nord, Cameroun</p>
+    </div>
+
+    <div class="about-box" style="margin-top:10px;background:var(--blue-light);border-color:#90c5f7;">
+      <h3 style="color:var(--blue)">📞 Nous contacter</h3>
+      <p>
+        <a href="https://wa.me/201228107801" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;font-size:.9rem;margin-bottom:10px;">
+          💬 WhatsApp : +20 122 810 7801
+        </a><br>
+        Email : contact@pharmalink-maroua.cm<br>Maroua, Extrême-Nord, Cameroun
+      </p>
+    </div>
+  </div>
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="window.showTab('accueil',null,this)">
+    <span class="nav-icon">🏠</span><span data-fr="Accueil" data-en="Home">Accueil</span>
+  </button>
+  <button class="nav-item" onclick="window.showTab('carte',null,this)">
+    <span class="nav-icon">🗺️</span><span data-fr="Carte" data-en="Map">Carte</span>
+  </button>
+  <button class="nav-item" onclick="window.openCommandeModal()">
+    <span class="nav-icon">🛒</span><span data-fr="Commander" data-en="Order">Commander</span>
+    <span class="nav-badge">NEW</span>
+  </button>
+  <button class="nav-item" onclick="window.openPaymentModal()">
+    <span class="nav-icon">💳</span><span data-fr="Paiement" data-en="Payment">Paiement</span>
+  </button>
+  <button class="nav-item" onclick="window.openRegisterModal()">
+    <span class="nav-icon">📝</span><span data-fr="S'inscrire" data-en="Register">S'inscrire</span>
+  </button>
+</nav>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay hidden" id="payment-modal" onclick="window.closeModal('payment-modal',event)">
+  <div class="modal-box">
+    <h3>💳 Modes de Paiement</h3>
+    <p class="modal-sub">Choisissez votre méthode de paiement mobile money</p>
+    <div class="pay-option" onclick="window.selectPayment('Orange Money')">
+      <span class="pay-icon">🟠</span>
+      <div><div class="pay-label">Orange Money</div><div class="pay-desc">Paiement mobile Orange Cameroun</div></div>
+    </div>
+    <div class="pay-option" onclick="window.selectPayment('MTN MoMo')">
+      <span class="pay-icon">🟡</span>
+      <div><div class="pay-label">MTN MoMo</div><div class="pay-desc">Mobile Money MTN Cameroun</div></div>
+    </div>
+    <div class="pay-option" onclick="window.selectPayment('Express Union')">
+      <span class="pay-icon">🔵</span>
+      <div><div class="pay-label">Express Union</div><div class="pay-desc">Transfert rapide Express Union</div></div>
+    </div>
+    <div class="pay-option" onclick="window.selectPayment('Espèces')">
+      <span class="pay-icon">💵</span>
+      <div><div class="pay-label">Espèces / Cash</div><div class="pay-desc">Paiement direct en pharmacie</div></div>
+    </div>
+    <button class="modal-close" onclick="window.closeModal('payment-modal')">Fermer</button>
+  </div>
+</div>
+
+<!-- COMMANDE MODAL -->
+<div class="modal-overlay hidden" id="commande-modal" onclick="window.closeModal('commande-modal',event)">
+  <div class="modal-box">
+    <h3>🛒 Commander un médicament</h3>
+    <p class="modal-sub">Réservez votre médicament en quelques secondes</p>
+    <div class="form-group">
+      <label>Choisir la pharmacie</label>
+      <select id="cmd-pharmacie">
+        <option value="">-- Sélectionner une pharmacie --</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-top:10px;">
+      <label>Médicament(s) souhaité(s)</label>
+      <div class="med-select-grid" id="cmd-med-grid"></div>
+    </div>
+    <div class="form-group">
+      <label>Votre nom</label>
+      <input type="text" id="cmd-nom" placeholder="Nom complet"/>
+    </div>
+    <div class="form-group">
+      <label>Votre téléphone</label>
+      <input type="tel" id="cmd-tel" placeholder="+237 6XX XXX XXX"/>
+    </div>
+    <div class="form-group">
+      <label>Mode de récupération</label>
+      <select id="cmd-mode">
+        <option value="retrait">🏥 Retrait en pharmacie</option>
+        <option value="livraison">🛵 Livraison à domicile</option>
+      </select>
+    </div>
+    <div class="form-group" id="cmd-adresse-group" style="display:none">
+      <label>Adresse de livraison</label>
+      <input type="text" id="cmd-adresse" placeholder="Quartier, rue…"/>
+    </div>
+    <div class="form-group">
+      <label>Mode de paiement</label>
+      <select id="cmd-paiement">
+        <option>Orange Money</option>
+        <option>MTN MoMo</option>
+        <option>Express Union</option>
+        <option>Espèces à la livraison</option>
+      </select>
+    </div>
+    <button class="btn-submit" style="margin-top:4px" onclick="window.submitCommande()">✅ Confirmer la commande</button>
+    <button class="modal-close" onclick="window.closeModal('commande-modal')">Fermer</button>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay hidden" id="review-modal" onclick="window.closeModal('review-modal',event)">
+  <div class="modal-box">
+    <h3>✍️ Laisser un avis</h3>
+    <p class="modal-sub">Partagez votre expérience avec la communauté</p>
+    <div class="form-group">
+      <label>Pharmacie concernée</label>
+      <select id="rev-pharmacie"><option value="">-- Choisir --</option></select>
+    </div>
+    <div class="form-group">
+      <label>Votre nom</label>
+      <input type="text" id="rev-nom" placeholder="Nom ou Anonyme"/>
+    </div>
+    <div class="form-group">
+      <label>Note (cliquez sur une étoile)</label>
+      <div id="star-selector" style="font-size:1.8rem;cursor:pointer;letter-spacing:4px;">
+        <span onclick="window.setRating(1)">⭐</span>
+        <span onclick="window.setRating(2)">⭐</span>
+        <span onclick="window.setRating(3)">⭐</span>
+        <span onclick="window.setRating(4)">⭐</span>
+        <span onclick="window.setRating(5)">⭐</span>
+      </div>
+      <div style="font-size:.75rem;color:var(--gray-text)" id="rating-display">Cliquez pour noter</div>
+    </div>
+    <div class="form-group">
+      <label>Commentaire</label>
+      <textarea id="rev-text" placeholder="Votre expérience…"></textarea>
+    </div>
+    <button class="btn-submit" onclick="window.submitReview()">Publier l'avis</button>
+    <button class="modal-close" onclick="window.closeModal('review-modal')">Fermer</button>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal-overlay hidden" id="register-modal" onclick="window.closeModal('register-modal',event)">
+  <div class="modal-box">
+    <h3>📝 Créer un compte</h3>
+    <p class="modal-sub">Rejoignez la communauté Pharma-Link Maroua</p>
+    <div id="reg-step1">
+      <div class="reg-type-choice">
+        <button class="reg-type-btn" id="btn-client" onclick="window.selectRegType('client')">
+          <span class="reg-type-icon">👤</span>Client<div style="font-size:.68rem;color:var(--gray-text);font-weight:400;margin-top:3px">Trouver des médicaments</div>
+        </button>
+        <button class="reg-type-btn" id="btn-pharma" onclick="window.selectRegType('pharmacie')">
+          <span class="reg-type-icon">🏥</span>Pharmacie<div style="font-size:.68rem;color:var(--gray-text);font-weight:400;margin-top:3px">Référencer ma pharmacie</div>
+        </button>
+      </div>
+    </div>
+    <div class="reg-form" id="form-client">
+      <div class="form-divider">Informations personnelles</div>
+      <div class="form-group"><label>Nom complet *</label><input type="text" id="client-name" placeholder="Amadou Moussa"/></div>
+      <div class="form-group"><label>Téléphone *</label><input type="tel" id="client-tel" placeholder="+237 6XX XXX XXX"/></div>
+      <div class="form-group"><label>Quartier</label>
+        <select id="client-quartier">
+          <option value="">-- Choisir --</option>
+          <option>Centre-ville</option><option>Dougoy</option><option>Domayo</option>
+          <option>Kakataré</option><option>Pitoaré</option><option>Lopéré</option>
+          <option>Boudoua</option><option>Ngassa</option><option>Zokok</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Email (optionnel)</label><input type="email" id="client-email" placeholder="email@exemple.com"/></div>
+      <button class="btn-submit" onclick="window.submitForm('client')">✅ Créer mon compte</button>
+      <button class="modal-close" style="margin-top:6px" onclick="window.backToTypeChoice()">← Retour</button>
+    </div>
+    <div class="reg-form" id="form-pharmacie">
+      <div class="form-divider">Informations de la pharmacie</div>
+      <div class="form-group"><label>Nom de la pharmacie *</label><input type="text" id="ph-nom" placeholder="Pharmacie Al-Amine"/></div>
+      <div class="form-group"><label>Propriétaire / Pharmacien *</label><input type="text" id="ph-proprio" placeholder="Dr. / M. / Mme"/></div>
+      <div class="form-group"><label>Téléphone *</label><input type="tel" id="ph-tel" placeholder="+237 6XX XXX XXX"/></div>
+      <div class="form-group"><label>Quartier *</label>
+        <select id="ph-quartier">
+          <option value="">-- Choisir --</option>
+          <option>Centre-ville</option><option>Dougoy</option><option>Domayo</option>
+          <option>Kakataré</option><option>Pitoaré</option><option>Lopéré</option>
+          <option>Boudoua</option><option>Ngassa</option><option>Zokok</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group"><label>N° de licence / Autorisation</label><input type="text" id="ph-licence" placeholder="N° officiel"/></div>
+      <div class="form-group"><label>Horaires</label><input type="text" id="ph-hours" placeholder="Ex: Lun-Sam 7h-21h"/></div>
+      <div class="form-group"><label>Email</label><input type="email" id="ph-email" placeholder="pharmacie@exemple.com"/></div>
+      <div class="form-group"><label>Description / Services</label><textarea id="ph-desc" placeholder="Vos spécialités, services…"></textarea></div>
+      <button class="btn-submit" onclick="window.submitForm('pharmacie')">✅ Enregistrer ma pharmacie</button>
+      <button class="modal-close" style="margin-top:6px" onclick="window.backToTypeChoice()">← Retour</button>
+    </div>
+    <div id="reg-success" class="hidden success-box">
+      <div class="check">✅</div>
+      <h4 id="success-title">Inscription réussie !</h4>
+      <p id="success-msg">Vous serez contacté sous 24h.</p>
+      <button class="btn-submit" style="margin-top:14px" onclick="window.closeModal('register-modal')">Fermer</button>
+    </div>
+    <button class="modal-close" id="reg-close" onclick="window.closeModal('register-modal')" style="margin-top:8px">Fermer</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+var lang='fr', mapInstance=null, currentRating=0;
+
+var pharmacies=[
+  {id:1,name:'Pharmacie Moderne Maroua',quartier:'Centre-ville',tel:'+237 699 111 222',wa:'237699111222',open:true,lat:10.5914,lng:14.3158,hours:'Lun-Sam 7h-21h',meds:[0,1,2,3,4],rating:4.5,garde:false},
+  {id:2,name:'Pharmacie Al-Amine',quartier:'Dougoy',tel:'+237 677 333 444',wa:'237677333444',open:true,lat:10.5950,lng:14.3120,hours:'Lun-Dim 7h-20h',meds:[1,3,5,6],rating:4.8,garde:false},
+  {id:3,name:'Pharmacie du Peuple',quartier:'Domayo',tel:'+237 655 555 666',wa:'237655555666',open:false,lat:10.5870,lng:14.3200,hours:'Lun-Sam 8h-20h',meds:[0,2,4,7],rating:4.2,garde:false},
+  {id:4,name:'Pharmacie Salama',quartier:'Kakataré',tel:'+237 699 777 888',wa:'237699777888',open:true,lat:10.5990,lng:14.3080,hours:'Lun-Dim 6h30-22h',meds:[2,3,5,8],rating:4.6,garde:false},
+  {id:5,name:'Pharmacie Bello',quartier:'Pitoaré',tel:'+237 677 999 000',wa:'237677999000',open:true,lat:10.5840,lng:14.3250,hours:'Lun-Sam 7h-21h',meds:[0,1,6,7],rating:4.3,garde:false},
+  {id:6,name:'Pharmacie Sainte Famille',quartier:'Lopéré',tel:'+237 655 100 200',wa:'237655100200',open:false,lat:10.5920,lng:14.3300,hours:'Lun-Ven 8h-18h',meds:[3,4,5,8],rating:4.7,garde:false},
+  {id:7,name:'Pharmacie de la Santé',quartier:'Boudoua',tel:'+237 699 200 300',wa:'237699200300',open:true,lat:10.5860,lng:14.3060,hours:'Lun-Dim 7h-21h',meds:[0,2,6,8],rating:4.4,garde:false},
+  {id:8,name:'Pharmacie Centrale Maroua',quartier:'Centre-ville',tel:'+237 677 400 500',wa:'237677400500',open:true,lat:10.5905,lng:14.3165,hours:'7j/7 8h-22h',meds:[0,1,2,3,4,5,6,7,8,9,10,11,12],rating:4.9,garde:true},
+  {id:9,name:'Pharmacie El-Nour',quartier:'Ngassa',tel:'+237 655 600 700',wa:'237655600700',open:true,lat:10.5975,lng:14.3220,hours:'Lun-Sam 7h-20h',meds:[1,3,5,7,10],rating:4.5,garde:false},
+  {id:10,name:"Pharmacie de l'Espoir",quartier:'Zokok',tel:'+237 699 800 900',wa:'237699800900',open:false,lat:10.5830,lng:14.3180,hours:'Lun-Sam 8h-19h',meds:[0,4,6,8],rating:4.1,garde:false},
+  {id:11,name:'Pharmacie Barka',quartier:'Dougoy',tel:'+237 677 101 202',wa:'237677101202',open:true,lat:10.5960,lng:14.3100,hours:'Lun-Dim 6h-22h',meds:[2,3,4,5,11],rating:4.6,garde:false},
+  {id:12,name:'Pharmacie de la Paix',quartier:'Domayo',tel:'+237 655 303 404',wa:'237655303404',open:true,lat:10.5880,lng:14.3190,hours:'Lun-Sam 7h-21h',meds:[0,1,7,8,12],rating:4.3,garde:false},
+  {id:13,name:'Pharmacie Mayo-Kaliao',quartier:'Centre-ville',tel:'+237 699 505 606',wa:'237699505606',open:true,lat:10.5900,lng:14.3140,hours:'Lun-Sam 7h-20h',meds:[1,2,3,6,9],rating:4.4,garde:false},
+  {id:14,name:'Pharmacie Adamaoua',quartier:'Kakataré',tel:'+237 677 707 808',wa:'237677707808',open:false,lat:10.5985,lng:14.3070,hours:'Lun-Ven 8h-18h',meds:[0,5,6,7],rating:4.0,garde:false},
+  {id:15,name:'Pharmacie du Nord',quartier:'Pitoaré',tel:'+237 655 909 010',wa:'237655909010',open:true,lat:10.5845,lng:14.3260,hours:'Lun-Dim 7h-21h',meds:[2,4,5,8,10],rating:4.7,garde:false},
+];
+
+var medicaments=[
+  {id:0,nom_fr:'Paracétamol 500mg',nom_en:'Paracetamol 500mg',cat_fr:'Antidouleur',cat_en:'Painkiller',prix:500},
+  {id:1,nom_fr:'Amoxicilline 250mg',nom_en:'Amoxicillin 250mg',cat_fr:'Antibiotique',cat_en:'Antibiotic',prix:1200},
+  {id:2,nom_fr:'Cotrimoxazole',nom_en:'Cotrimoxazole',cat_fr:'Antibiotique',cat_en:'Antibiotic',prix:800},
+  {id:3,nom_fr:'Chloroquine 100mg',nom_en:'Chloroquine 100mg',cat_fr:'Antipaludéen',cat_en:'Antimalarial',prix:600},
+  {id:4,nom_fr:'Ibuprofène 400mg',nom_en:'Ibuprofen 400mg',cat_fr:'Anti-inflam.',cat_en:'Anti-inflam.',prix:700},
+  {id:5,nom_fr:'Métronidazole 250mg',nom_en:'Metronidazole 250mg',cat_fr:'Antibiotique',cat_en:'Antibiotic',prix:900},
+  {id:6,nom_fr:'Vitamine C 1000mg',nom_en:'Vitamin C 1000mg',cat_fr:'Vitamines',cat_en:'Vitamins',prix:400},
+  {id:7,nom_fr:'Sels de Réhydratation',nom_en:'Rehydration Salts',cat_fr:'Réhydratation',cat_en:'Rehydration',prix:350},
+  {id:8,nom_fr:'Oméprazole 20mg',nom_en:'Omeprazole 20mg',cat_fr:'Gastro',cat_en:'Gastro',prix:1100},
+  {id:9,nom_fr:'Artemether/Luméfantrine',nom_en:'Artemether/Lumefantrine',cat_fr:'Antipaludéen',cat_en:'Antimalarial',prix:2500},
+  {id:10,nom_fr:'Fer + Acide Folique',nom_en:'Iron + Folic Acid',cat_fr:'Vitamines',cat_en:'Vitamins',prix:600},
+  {id:11,nom_fr:'Amoxicilline 500mg',nom_en:'Amoxicillin 500mg',cat_fr:'Antibiotique',cat_en:'Antibiotic',prix:1800},
+  {id:12,nom_fr:'Diclofénac 50mg',nom_en:'Diclofenac 50mg',cat_fr:'Anti-inflam.',cat_en:'Anti-inflam.',prix:750},
+];
+
+var reviews=[
+  {nom:'Aissatou M.',pharmacie:'Pharmacie Centrale Maroua',note:5,text:'Service excellent, médicaments toujours disponibles. Je recommande vivement !',date:'18 juin 2026'},
+  {nom:'Ibrahim D.',pharmacie:'Pharmacie Al-Amine',note:5,text:'Personnel très accueillant et professionnel. Bonne pharmacie à Dougoy.',date:'15 juin 2026'},
+  {nom:'Fatimé K.',pharmacie:'Pharmacie Salama',note:4,text:'Pharmacie bien approvisionnée. Horaires pratiques.',date:'12 juin 2026'},
+  {nom:'Moussa B.',pharmacie:'Pharmacie Moderne Maroua',note:5,text:'Rapide et efficace. J\'ai trouvé mes médicaments sans problème.',date:'10 juin 2026'},
+  {nom:'Amina T.',pharmacie:'Pharmacie Bello',note:4,text:'Bonne pharmacie, prix raisonnables.',date:'8 juin 2026'},
+  {nom:'Youssouf A.',pharmacie:'Pharmacie El-Nour',note:5,text:'Très bien. Personnel à l\'écoute.',date:'5 juin 2026'},
+  {nom:'Hawa N.',pharmacie:'Pharmacie de la Paix',note:4,text:'Propre et bien organisé.',date:'2 juin 2026'},
+  {nom:'Mahamat L.',pharmacie:'Pharmacie Centrale Maroua',note:5,text:'La meilleure pharmacie de Maroua ! Ouverte 7j/7.',date:'30 mai 2026'},
+];
+
+var tips=[
+  {icon:'🌡️',fr_title:'Fièvre',en_title:'Fever',fr_text:'Buvez beaucoup d\'eau. Consultez si la fièvre dépasse 39°C.',en_text:'Drink plenty of water. See a doctor if fever exceeds 39°C.'},
+  {icon:'💊',fr_title:'Antibiotiques',en_title:'Antibiotics',fr_text:'Terminez toujours votre traitement même si vous vous sentez mieux.',en_text:'Always complete your antibiotic course, even if you feel better.'},
+  {icon:'🦟',fr_title:'Paludisme',en_title:'Malaria',fr_text:'Dormez sous moustiquaire. Consultez dès les premiers symptômes.',en_text:'Sleep under a mosquito net. See a doctor at first symptoms.'},
+  {icon:'💧',fr_title:'Hydratation',en_title:'Hydration',fr_text:'Buvez au moins 2 litres d\'eau par jour, surtout en saison chaude.',en_text:'Drink at least 2 liters of water daily, especially in hot season.'},
+  {icon:'🍋',fr_title:'Vitamine C',en_title:'Vitamin C',fr_text:'Les agrumes renforcent votre immunité naturellement.',en_text:'Citrus fruits naturally boost your immunity.'},
+  {icon:'🏥',fr_title:'Urgences',en_title:'Emergencies',fr_text:'En urgence : SAMU 15 ou CHR Maroua (+237 222 291 401).',en_text:'Emergency: SAMU 15 or CHR Maroua (+237 222 291 401).'},
+];
+
+// ── INIT MAP ──
+function initMap(){
+  if(mapInstance) return;
+  mapInstance=L.map('map').setView([10.5914,14.3158],13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(mapInstance);
+  pharmacies.forEach(function(p){
+    var col=p.open?'#00875A':'#DE350B';
+    var icon=L.divIcon({html:'<div style="background:'+col+';width:14px;height:14px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.4)"></div>',iconSize:[19,19],iconAnchor:[9,9],className:''});
+    var pop='<b>'+p.name+'</b><br>📍 '+p.quartier+'<br>📞 <a href="tel:'+p.tel+'">'+p.tel+'</a><br>'+(p.open?'<span style="color:#00875A;font-weight:700">🟢 Ouvert</span>':'<span style="color:#DE350B;font-weight:700">🔴 Fermé</span>')+'<br>⏰ '+p.hours+'<br><a href="https://wa.me/'+p.wa+'" target="_blank" style="color:#00875A;font-weight:700">💬 WhatsApp</a>';
+    L.marker([p.lat,p.lng],{icon:icon}).addTo(mapInstance).bindPopup(pop);
+  });
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var ui=L.divIcon({html:'<div style="background:#0052CC;width:12px;height:12px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.4)"></div>',iconSize:[17,17],iconAnchor:[8,8],className:''});
+      L.marker([pos.coords.latitude,pos.coords.longitude],{icon:ui}).addTo(mapInstance).bindPopup('📍 Vous êtes ici').openPopup();
+    },function(){});
+  }
+  setTimeout(function(){ mapInstance.invalidateSize(); },300);
+}
+
+// ── RENDER FUNCTIONS ──
+function stars(n){ var s=''; for(var i=1;i<=5;i++) s+=i<=Math.round(n)?'⭐':'☆'; return s+' ('+n+')'; }
+
+function renderPharmCard(p,showBtns){
+  var s=showBtns===false?'':
+    '<div class="pharm-actions">'+
+    '<a class="btn-sm btn-green" href="tel:'+p.tel+'">📞 Appeler</a>'+
+    '<a class="btn-sm btn-gold" href="https://wa.me/'+p.wa+'" target="_blank">💬 WhatsApp</a>'+
+    '<button class="btn-sm btn-blue" onclick="window.openCommandeModal('+p.id+')">🛒 Commander</button>'+
+    '<button class="btn-sm btn-purple" onclick="window.openPaymentModal()">💳 Payer</button>'+
+    '</div>';
+  return '<div class="pharmacy-card'+(p.open?'':' closed-card')+'">'+
+    '<div class="pharm-name">'+(p.garde?'🌙 ':'')+p.name+'</div>'+
+    '<div class="pharm-meta">📍 '+p.quartier+' &nbsp;|&nbsp; ⏰ '+p.hours+'<br>📞 '+p.tel+'</div>'+
+    '<div class="pharm-status '+(p.open?'open-txt':'closed-txt')+'">'+(p.open?'🟢 Ouvert':'🔴 Fermé')+'</div>'+
+    '<div class="pharm-stars">'+stars(p.rating)+'</div>'+
+    s+'</div>';
+}
+
+function renderAccueil(){
+  // garde date
+  var now=new Date();
+  document.getElementById('garde-date').textContent=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  // open pharmacies
+  var open=pharmacies.filter(function(p){return p.open;});
+  document.getElementById('open-pharmacy-list').innerHTML=open.map(function(p){return renderPharmCard(p);}).join('');
+}
+
+function renderPharmacies(){
+  document.getElementById('pharmacy-list').innerHTML=pharmacies.map(function(p){return renderPharmCard(p);}).join('');
+}
+
+function renderMedicaments(){
+  var html='';
+  medicaments.forEach(function(m){
+    var nom=lang==='fr'?m.nom_fr:m.nom_en, cat=lang==='fr'?m.cat_fr:m.cat_en;
+    var ok=pharmacies.some(function(p){return p.meds&&p.meds.indexOf(m.id)!==-1;});
+    var garde=pharmacies.some(function(p){return p.garde&&p.meds&&p.meds.indexOf(m.id)!==-1;});
+    html+='<div class="med-item"><div class="med-info"><h4>'+nom+'</h4><p>'+cat+'</p>'+
+      '<span class="badge-ok">✅ '+ok+'</span>'+
+      (garde?'<span class="badge-garde">🌙 En garde</span>':'')+
+      '</div><div class="med-price">'+m.prix+' FCFA</div></div>';
+  });
+  // fix badges
+  html=html.replace(/badge-ok">✅ true/g,'badge-ok">✅ Disponible').replace(/badge-ok">✅ false/g,'badge-no">❌ Indisponible');
+  document.getElementById('med-list').innerHTML=html;
+}
+
+function renderReviews(){
+  var html='';
+  reviews.forEach(function(r){
+    var s=''; for(var i=0;i<r.note;i++) s+='⭐';
+    html+='<div class="review-card">'+
+      '<div class="review-header"><div><div class="reviewer-name">'+r.nom+'</div><div class="review-pharm">'+r.pharmacie+'</div></div>'+
+      '<div class="review-stars">'+s+'</div></div>'+
+      '<div class="review-text">'+r.text+'</div>'+
+      '<div class="review-date">'+r.date+'</div></div>';
+  });
+  document.getElementById('reviews-list').innerHTML=html;
+  document.getElementById('stat-reviews').textContent=reviews.length;
+}
+
+function renderStock(){
+  var html='';
+  medicaments.slice(0,8).forEach(function(m){
+    var ok=Math.random()>0.3;
+    html+='<div class="stock-row"><span>'+m.nom_fr+'</span>'+
+      '<span class="'+(ok?'stock-badge-ok':'stock-badge-no')+'" onclick="window.showToastMsg(\'Stock mis à jour ✅\')">'+
+      (ok?'✅ Dispo':'❌ Épuisé')+'</span></div>';
+  });
+  document.getElementById('stock-list').innerHTML=html;
+}
+
+function renderOrders(){
+  var orders=[
+    {nom:'Fatimé K.',med:'Paracétamol 500mg',mode:'Retrait',pay:'Orange Money',time:'14:32',status:'En attente'},
+    {nom:'Ibrahim D.',med:'Amoxicilline 250mg',mode:'Livraison',pay:'MTN MoMo',time:'13:15',status:'Confirmée'},
+    {nom:'Aissatou M.',med:'Chloroquine 100mg',mode:'Retrait',pay:'Espèces',time:'11:48',status:'Récupérée'},
+  ];
+  var html='';
+  orders.forEach(function(o){
+    var col=o.status==='En attente'?'#FFAB00':o.status==='Confirmée'?'#00875A':'#6B778C';
+    html+='<div style="border-bottom:1px solid #f0f0f0;padding:9px 0;font-size:.82rem;">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;">'+
+      '<b>'+o.nom+'</b><span style="color:'+col+';font-weight:700;font-size:.72rem">'+o.status+'</span></div>'+
+      '<div style="color:var(--gray-text);margin-top:2px">💊 '+o.med+' &nbsp;|&nbsp; '+o.mode+' &nbsp;|&nbsp; '+o.pay+'</div>'+
+      '<div style="color:var(--gray-text);font-size:.72rem;margin-top:2px">⏰ '+o.time+'</div></div>';
+  });
+  document.getElementById('orders-list').innerHTML=html;
+}
+
+function renderTips(){
+  document.getElementById('tips-list').innerHTML=tips.map(function(t){
+    return '<div class="tip-card"><div class="tip-icon">'+t.icon+'</div>'+
+      '<div class="tip-title">'+(lang==='fr'?t.fr_title:t.en_title)+'</div>'+
+      '<div class="tip-text">'+(lang==='fr'?t.fr_text:t.en_text)+'</div></div>';
+  }).join('');
+}
+
+function fillSelects(){
+  var opts=pharmacies.map(function(p){return '<option value="'+p.id+'">'+p.name+'</option>';}).join('');
+  ['cmd-pharmacie','rev-pharmacie'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.innerHTML='<option value="">-- Choisir --</option>'+opts;
+  });
+}
+
+function renderMedSelectGrid(){
+  document.getElementById('cmd-med-grid').innerHTML=medicaments.map(function(m){
+    return '<div class="med-select-item" onclick="window.toggleMedSelect(this,'+m.id+')" data-id="'+m.id+'">'+
+      (lang==='fr'?m.nom_fr:m.nom_en)+'<br><b>'+m.prix+' F</b></div>';
+  }).join('');
+}
+
+// ── TABS ──
+window.showTab=function(name,tabBtn,navBtn){
+  ['accueil','carte','pharmacies','medicaments','avis','dashboard','conseils','apropos'].forEach(function(t){
+    document.getElementById('tab-'+t).classList.add('hidden');
+  });
+  document.getElementById('tab-'+name).classList.remove('hidden');
+  document.getElementById('search-results').innerHTML='';
+  document.getElementById('search-input').value='';
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  if(tabBtn) tabBtn.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(b){b.classList.remove('active');});
+  if(navBtn) navBtn.classList.add('active');
+  if(name==='carte') setTimeout(function(){if(mapInstance) mapInstance.invalidateSize(); else initMap();},200);
+};
+
+// ── SEARCH ──
+window.doSearch=function(){
+  var q=document.getElementById('search-input').value.trim().toLowerCase();
+  var c=document.getElementById('search-results');
+  if(!q){c.innerHTML='';return;}
+  var res=medicaments.filter(function(m){
+    return (m.nom_fr||'').toLowerCase().indexOf(q)!==-1||(m.nom_en||'').toLowerCase().indexOf(q)!==-1||(m.cat_fr||'').toLowerCase().indexOf(q)!==-1;
+  });
+  if(!res.length){c.innerHTML='<div class="sr-item">Aucun résultat pour "'+q+'"</div>';return;}
+  var html='<div class="section-title">Résultats : "'+q+'" ('+res.length+')</div>';
+  res.forEach(function(m){
+    var nom=lang==='fr'?m.nom_fr:m.nom_en;
+    var ph=pharmacies.filter(function(p){return p.meds&&p.meds.indexOf(m.id)!==-1;});
+    html+='<div class="sr-item"><div><b>'+nom+'</b><br><span style="font-size:.75rem;color:var(--gray-text)">'+(lang==='fr'?m.cat_fr:m.cat_en)+'</span><br>'+
+      (ph.length?'<span class="badge-ok">✅ '+ph.length+' pharmacie(s)</span>':'<span class="badge-no">❌ Indisponible</span>')+
+      '</div><div style="font-weight:800;color:var(--green);white-space:nowrap">'+m.prix+' FCFA</div></div>';
+  });
+  c.innerHTML=html;
+};
+
+// ── PAYMENT ──
+window.openPaymentModal=function(){document.getElementById('payment-modal').classList.remove('hidden');};
+window.selectPayment=function(m){closeModal('payment-modal');showToast('Paiement via '+m+' ✅');};
+
+// ── COMMANDE ──
+window.openCommandeModal=function(pharmId){
+  fillSelects(); renderMedSelectGrid();
+  if(pharmId){
+    var el=document.getElementById('cmd-pharmacie');
+    if(el) el.value=pharmId;
+  }
+  document.getElementById('commande-modal').classList.remove('hidden');
+};
+window.toggleMedSelect=function(el,id){el.classList.toggle('selected');};
+document.getElementById('cmd-mode').addEventListener('change',function(){
+  document.getElementById('cmd-adresse-group').style.display=this.value==='livraison'?'flex':'none';
+});
+window.submitCommande=function(){
+  var nom=document.getElementById('cmd-nom').value.trim();
+  var tel=document.getElementById('cmd-tel').value.trim();
+  var ph=document.getElementById('cmd-pharmacie').value;
+  var selected=document.querySelectorAll('.med-select-item.selected');
+  if(!nom||!tel||!ph||!selected.length){showToast('⚠️ Remplissez tous les champs et choisissez un médicament');return;}
+  closeModal('commande-modal');
+  showToast('✅ Commande envoyée ! Vous serez contacté bientôt.');
+};
+
+// ── REVIEW ──
+window.openReviewModal=function(){fillSelects();document.getElementById('review-modal').classList.remove('hidden');};
+window.setRating=function(n){
+  currentRating=n;
+  var s=''; for(var i=0;i<5;i++) s+='<span onclick="window.setRating('+(i+1)+')">'+(i<n?'⭐':'☆')+'</span>';
+  document.getElementById('star-selector').innerHTML=s;
+  document.getElementById('rating-display').textContent='Note : '+n+'/5';
+};
+window.submitReview=function(){
+  var nom=document.getElementById('rev-nom').value.trim();
+  var ph=document.getElementById('rev-pharmacie').value;
+  var txt=document.getElementById('rev-text').value.trim();
+  if(!nom||!ph||!currentRating||!txt){showToast('⚠️ Remplissez tous les champs');return;}
+  var phName=pharmacies.find(function(p){return p.id==ph;});
+  var now=new Date();
+  var date=now.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  reviews.unshift({nom:nom,pharmacie:phName?phName.name:ph,note:currentRating,text:txt,date:date});
+  closeModal('review-modal');
+  renderReviews();
+  showToast('✅ Avis publié ! Merci.');
+};
+
+// ── REGISTER ──
+window.openRegisterModal=function(){backToTypeChoice();document.getElementById('register-modal').classList.remove('hidden');};
+window.selectRegType=function(type){
+  document.getElementById('btn-client').classList.remove('selected');
+  document.getElementById('btn-pharma').classList.remove('selected');
+  document.getElementById('form-client').classList.remove('visible');
+  document.getElementById('form-pharmacie').classList.remove('visible');
+  document.getElementById('reg-success').classList.add('hidden');
+  if(type==='client'){document.getElementById('btn-client').classList.add('selected');document.getElementById('form-client').classList.add('visible');}
+  else{document.getElementById('btn-pharma').classList.add('selected');document.getElementById('form-pharmacie').classList.add('visible');}
+};
+window.backToTypeChoice=function(){
+  document.getElementById('form-client').classList.remove('visible');
+  document.getElementById('form-pharmacie').classList.remove('visible');
+  document.getElementById('reg-success').classList.add('hidden');
+  document.getElementById('btn-client').classList.remove('selected');
+  document.getElementById('btn-pharma').classList.remove('selected');
+  document.getElementById('reg-close').style.display='';
+};
+window.submitForm=function(type){
+  if(type==='client'){
+    if(!document.getElementById('client-name').value.trim()||!document.getElementById('client-tel').value.trim()){showToast('⚠️ Champs obligatoires manquants');return;}
+  } else {
+    if(!document.getElementById('ph-nom').value.trim()||!document.getElementById('ph-proprio').value.trim()||!document.getElementById('ph-tel').value.trim()){showToast('⚠️ Champs obligatoires manquants');return;}
+  }
+  document.getElementById('form-client').classList.remove('visible');
+  document.getElementById('form-pharmacie').classList.remove('visible');
+  document.getElementById('reg-step1').style.display='none';
+  document.getElementById('reg-success').classList.remove('hidden');
+  document.getElementById('success-title').textContent=type==='client'?'Compte créé !':'Demande envoyée !';
+  document.getElementById('success-msg').textContent=type==='client'?'Bienvenue sur Pharma-Link Maroua ! Vous pouvez maintenant commander vos médicaments.':'Votre pharmacie sera vérifiée et ajoutée sous 24h. Vous serez contacté par WhatsApp.';
+  document.getElementById('reg-close').style.display='none';
+};
+
+// ── CLOSE MODAL ──
+window.closeModal=function(id,e){
+  if(!e||e.target===document.getElementById(id)) document.getElementById(id).classList.add('hidden');
+};
+
+// ── URGENCE ──
+window.callNum=function(num){window.location.href='tel:'+num;};
+
+// ── LANG ──
+window.toggleLang=function(){
+  lang=lang==='fr'?'en':'fr';
+  document.getElementById('lang-toggle').textContent=lang==='fr'?'EN':'FR';
+  document.getElementById('hero-title').textContent=lang==='fr'?'Trouvez vos médicaments à Maroua':'Find your medicines in Maroua';
+  document.getElementById('hero-sub').textContent=lang==='fr'?'Pharmacies · Gardes · Livraison · Paiement mobile':'Pharmacies · On-call · Delivery · Mobile payment';
+  document.getElementById('search-input').placeholder=lang==='fr'?'Paracétamol, Amoxicilline…':'Paracetamol, Amoxicillin…';
+  document.getElementById('search-btn').textContent=lang==='fr'?'🔍 Chercher':'🔍 Search';
+  document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+lang);});
+  renderMedicaments(); renderTips(); renderMedSelectGrid();
+  window.doSearch();
+};
+
+// ── DASHBOARD LOGIN ──
+var DASH_PASSWORD = 'Admin1200';
+window.dashLogin = function(){
+  var input = document.getElementById('dash-password-input');
+  var err = document.getElementById('dash-err');
+  if(input.value === DASH_PASSWORD){
+    document.getElementById('dash-login-screen').style.display = 'none';
+    document.getElementById('dash-content').style.display = 'block';
+    err.style.display = 'none';
+    input.value = '';
+    showToast('✅ Bienvenue Dr. Boubakary !');
+  } else {
+    err.style.display = 'block';
+    input.value = '';
+    input.focus();
+  }
+};
+window.dashLogout = function(){
+  document.getElementById('dash-login-screen').style.display = 'block';
+  document.getElementById('dash-content').style.display = 'none';
+  showToast('🔒 Déconnecté du dashboard');
+};
+
+// ── TOAST ──
+function showToast(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');},3000);
+}
+window.showToastMsg=showToast;
+
+// ── QR CODE ──
+function generateQR(){
+  var container=document.getElementById('qrcode-container');
+  if(!container||container.innerHTML!=='') return;
+  var url='https://pharmalinkmaroua.neocities.org/pharma-link-maroua%20(13)';
+  new QRCode(container,{
+    text:url,
+    width:120,height:120,
+    colorDark:'#00875A',
+    colorLight:'#ffffff',
+    correctLevel:QRCode.CorrectLevel.H
+  });
+}
+window.downloadQR=function(){
+  var canvas=document.querySelector('#qrcode-container canvas');
+  if(!canvas){showToast('QR code non disponible');return;}
+  var a=document.createElement('a');
+  a.download='pharmalink-maroua-qrcode.png';
+  a.href=canvas.toDataURL('image/png');
+  a.click();
+  showToast('✅ QR code téléchargé !');
+};
+
+// ── INIT ──
+renderAccueil();
+renderPharmacies();
+renderMedicaments();
+renderReviews();
+renderTips();
+renderStock();
+renderOrders();
+fillSelects();
+renderMedSelectGrid();
+
+setTimeout(function(){document.getElementById('splash').classList.add('hidden');},2500);
+setTimeout(function(){initMap();},2700);
+setTimeout(function(){generateQR();},2800);
+
+})();
+</script>
+</body>
+</html>
