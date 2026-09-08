@@ -85,15 +85,6 @@ main{padding:12px 16px 100px;max-width:960px;margin:0 auto;}
 .qr-info p{font-size:.78rem;color:var(--gray-text);line-height:1.5;}
 #qrcode-container canvas,#qrcode-container img{border-radius:8px;border:3px solid var(--green-light);}
 
-/* URGENCE BANNER */
-.urgence-banner{background:var(--red);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;color:#fff;}
-.urgence-banner h3{font-size:.95rem;font-weight:800;margin-bottom:8px;}
-.urgence-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.urgence-card{background:rgba(255,255,255,.15);border-radius:8px;padding:10px 12px;cursor:pointer;transition:.2s;}
-.urgence-card:hover{background:rgba(255,255,255,.25);}
-.urgence-num{font-size:1.1rem;font-weight:800;}
-.urgence-lbl{font-size:.72rem;opacity:.9;margin-top:2px;}
-
 /* GARDE CARD */
 .garde-card{background:linear-gradient(135deg,var(--gold-light),#fff);border:2px solid var(--gold);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;}
 .garde-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
@@ -148,28 +139,6 @@ main{padding:12px 16px 100px;max-width:960px;margin:0 auto;}
 .about-box{background:var(--green-light);border-radius:var(--radius);padding:16px;border:1px solid #b3e6d0;margin-bottom:14px;}
 .about-box h3{color:var(--green-dark);font-size:.92rem;font-weight:800;margin-bottom:6px;}
 .about-box p{font-size:.83rem;line-height:1.6;}
-
-/* DASHBOARD */
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-.dash-card{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);text-align:center;}
-.dash-num{font-size:1.6rem;font-weight:800;color:var(--green);}
-.dash-lbl{font-size:.72rem;color:var(--gray-text);margin-top:3px;}
-.dash-section{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:12px;}
-.dash-section h4{font-size:.88rem;font-weight:700;margin-bottom:10px;color:var(--dark);}
-.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;}
-.toggle-row:last-child{border-bottom:none;}
-.toggle-label{font-size:.83rem;font-weight:600;}
-.toggle-desc{font-size:.72rem;color:var(--gray-text);}
-.toggle{position:relative;width:42px;height:24px;cursor:pointer;}
-.toggle input{opacity:0;width:0;height:0;}
-.slider{position:absolute;inset:0;background:#ddd;border-radius:24px;transition:.3s;}
-.slider:before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;}
-input:checked+.slider{background:var(--green);}
-input:checked+.slider:before{transform:translateX(18px);}
-.stock-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:.82rem;}
-.stock-row:last-child{border-bottom:none;}
-.stock-badge-ok{background:var(--green-light);color:var(--green);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:10px;cursor:pointer;}
-.stock-badge-no{background:var(--red-light);color:var(--red);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:10px;cursor:pointer;}
 
 /* REVIEWS */
 .review-card{background:#fff;border-radius:var(--radius);padding:13px;box-shadow:var(--shadow);margin-bottom:9px;}
@@ -246,19 +215,6 @@ input:checked+.slider:before{transform:translateX(18px);}
 .notif-msg{font-size:.78rem;color:var(--gray-text);margin-top:2px;}
 .notif-time{font-size:.7rem;color:var(--gray-text);margin-top:3px;}
 
-/* DASHBOARD LOGIN */
-.dash-login{background:#fff;border-radius:var(--radius);padding:32px 24px;box-shadow:var(--shadow);max-width:360px;margin:40px auto;text-align:center;}
-.dash-login .lock-icon{font-size:3rem;margin-bottom:12px;}
-.dash-login h3{font-size:1.1rem;font-weight:800;color:var(--dark);margin-bottom:6px;}
-.dash-login p{font-size:.82rem;color:var(--gray-text);margin-bottom:20px;}
-.dash-login input{width:100%;padding:11px 14px;border-radius:8px;border:1.5px solid #ddd;font-size:1rem;outline:none;text-align:center;letter-spacing:3px;font-weight:700;transition:.2s;font-family:inherit;}
-.dash-login input:focus{border-color:var(--green);}
-.dash-login .err{color:var(--red);font-size:.78rem;margin-top:8px;display:none;}
-.dash-login .btn-login{width:100%;margin-top:12px;background:var(--green);color:#fff;border:none;border-radius:8px;padding:12px;font-weight:800;font-size:.95rem;cursor:pointer;transition:.2s;}
-.dash-login .btn-login:hover{background:var(--green-dark);}
-.dash-logout{display:flex;justify-content:flex-end;margin-bottom:10px;}
-.btn-logout{background:var(--red-light);color:var(--red);border:none;border-radius:8px;padding:7px 14px;font-size:.78rem;font-weight:700;cursor:pointer;}
-.btn-logout:hover{background:#f5c6bc;}
 </style>
 </head>
 <body>
@@ -320,7 +276,6 @@ input:checked+.slider:before{transform:translateX(18px);}
   <button class="tab-btn" onclick="window.showTab('pharmacies',this)">🏥 Pharmacies</button>
   <button class="tab-btn" onclick="window.showTab('medicaments',this)">💊 Médicaments</button>
   <button class="tab-btn" onclick="window.showTab('avis',this)">⭐ Avis</button>
-  <button class="tab-btn" onclick="window.showTab('dashboard',this)">📊 Dashboard</button>
   <button class="tab-btn" onclick="window.showTab('conseils',this)">🌿 Conseils</button>
   <button class="tab-btn" onclick="window.showTab('apropos',this)">ℹ️ À propos</button>
 </div>
@@ -350,16 +305,6 @@ input:checked+.slider:before{transform:translateX(18px);}
       </div>
     </div>
 
-    <!-- URGENCE -->
-    <div class="urgence-banner">
-      <h3>🚨 Numéros d'urgence Maroua</h3>
-      <div class="urgence-grid">
-        <div class="urgence-card" onclick="window.callNum('15')"><div class="urgence-num">15</div><div class="urgence-lbl">SAMU / Urgences</div></div>
-        <div class="urgence-card" onclick="window.callNum('+237 222 291 401')"><div class="urgence-num">CHR Maroua</div><div class="urgence-lbl">+237 222 291 401</div></div>
-        <div class="urgence-card" onclick="window.callNum('18')"><div class="urgence-num">18</div><div class="urgence-lbl">Pompiers</div></div>
-        <div class="urgence-card" onclick="window.callNum('117')"><div class="urgence-num">117</div><div class="urgence-lbl">Police / Gendarmerie</div></div>
-      </div>
-    </div>
     <!-- GARDE -->
     <div class="section-title">🌙 Pharmacie de garde ce soir</div>
     <div class="garde-card">
@@ -415,64 +360,6 @@ input:checked+.slider:before{transform:translateX(18px);}
     </div>
     <div id="reviews-list"></div>
   </div>
-
-  <!-- DASHBOARD -->
-  <div id="tab-dashboard" class="hidden">
-    <div class="section-title">📊 Tableau de bord Pharmacie</div>
-
-    <!-- ECRAN LOGIN -->
-    <div id="dash-login-screen" class="dash-login">
-      <div class="lock-icon">🔐</div>
-      <h3>Accès réservé</h3>
-      <p>Entrez votre mot de passe pour accéder au tableau de bord de votre pharmacie</p>
-      <input type="password" id="dash-password-input" placeholder="••••••••••" onkeydown="if(event.key==='Enter') window.dashLogin()"/>
-      <div class="err" id="dash-err">❌ Mot de passe incorrect. Réessayez.</div>
-      <button class="btn-login" onclick="window.dashLogin()">🔓 Accéder au Dashboard</button>
-    </div>
-
-    <!-- CONTENU DASHBOARD (caché par défaut) -->
-    <div id="dash-content" style="display:none">
-      <div class="dash-logout">
-        <button class="btn-logout" onclick="window.dashLogout()">🔒 Se déconnecter</button>
-      </div>
-    <div style="background:var(--blue-light);border:1.5px solid var(--blue);border-radius:var(--radius);padding:10px 14px;font-size:.8rem;color:var(--blue);font-weight:600;margin-bottom:12px;">
-      🔐 Espace réservé aux pharmacies inscrites sur Pharma-Link
-    </div>
-    <div class="dash-grid">
-      <div class="dash-card"><div class="dash-num">127</div><div class="dash-lbl">Vues ce mois</div></div>
-      <div class="dash-card"><div class="dash-num">23</div><div class="dash-lbl">Commandes reçues</div></div>
-      <div class="dash-card"><div class="dash-num">4.7⭐</div><div class="dash-lbl">Note moyenne</div></div>
-      <div class="dash-card"><div class="dash-num">8</div><div class="dash-lbl">Avis clients</div></div>
-    </div>
-    <div class="dash-section">
-      <h4>⚙️ Paramètres de ma pharmacie</h4>
-      <div class="toggle-row">
-        <div><div class="toggle-label">🟢 Ouvert maintenant</div><div class="toggle-desc">Visible comme "ouvert" sur la carte</div></div>
-        <label class="toggle"><input type="checkbox" checked onchange="window.showToastMsg('Statut mis à jour ✅')"><span class="slider"></span></label>
-      </div>
-      <div class="toggle-row">
-        <div><div class="toggle-label">🌙 Pharmacie de garde</div><div class="toggle-desc">Activer le mode garde cette nuit</div></div>
-        <label class="toggle"><input type="checkbox" onchange="window.showToastMsg('Mode garde activé 🌙')"><span class="slider"></span></label>
-      </div>
-      <div class="toggle-row">
-        <div><div class="toggle-label">🛵 Livraison à domicile</div><div class="toggle-desc">Proposer la livraison</div></div>
-        <label class="toggle"><input type="checkbox" onchange="window.showToastMsg('Livraison mise à jour ✅')"><span class="slider"></span></label>
-      </div>
-      <div class="toggle-row">
-        <div><div class="toggle-label">📲 Notifications WhatsApp</div><div class="toggle-desc">Recevoir les commandes sur WhatsApp</div></div>
-        <label class="toggle"><input type="checkbox" checked onchange="window.showToastMsg('Notifications mises à jour ✅')"><span class="slider"></span></label>
-      </div>
-    </div>
-    <div class="dash-section">
-      <h4>💊 Gérer mon stock</h4>
-      <div id="stock-list"></div>
-    </div>
-    <div class="dash-section">
-      <h4>📋 Dernières commandes reçues</h4>
-      <div id="orders-list"></div>
-    </div>
-    </div><!-- fin dash-content -->
-  </div><!-- fin tab-dashboard -->
 
   <!-- CONSEILS -->
   <div id="tab-conseils" class="hidden">
@@ -833,35 +720,6 @@ function renderReviews(){
   document.getElementById('stat-reviews').textContent=reviews.length;
 }
 
-function renderStock(){
-  var html='';
-  medicaments.slice(0,8).forEach(function(m){
-    var ok=Math.random()>0.3;
-    html+='<div class="stock-row"><span>'+m.nom_fr+'</span>'+
-      '<span class="'+(ok?'stock-badge-ok':'stock-badge-no')+'" onclick="window.showToastMsg(\'Stock mis à jour ✅\')">'+
-      (ok?'✅ Dispo':'❌ Épuisé')+'</span></div>';
-  });
-  document.getElementById('stock-list').innerHTML=html;
-}
-
-function renderOrders(){
-  var orders=[
-    {nom:'Fatimé K.',med:'Paracétamol 500mg',mode:'Retrait',pay:'Orange Money',time:'14:32',status:'En attente'},
-    {nom:'Ibrahim D.',med:'Amoxicilline 250mg',mode:'Livraison',pay:'MTN MoMo',time:'13:15',status:'Confirmée'},
-    {nom:'Aissatou M.',med:'Chloroquine 100mg',mode:'Retrait',pay:'Espèces',time:'11:48',status:'Récupérée'},
-  ];
-  var html='';
-  orders.forEach(function(o){
-    var col=o.status==='En attente'?'#FFAB00':o.status==='Confirmée'?'#00875A':'#6B778C';
-    html+='<div style="border-bottom:1px solid #f0f0f0;padding:9px 0;font-size:.82rem;">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;">'+
-      '<b>'+o.nom+'</b><span style="color:'+col+';font-weight:700;font-size:.72rem">'+o.status+'</span></div>'+
-      '<div style="color:var(--gray-text);margin-top:2px">💊 '+o.med+' &nbsp;|&nbsp; '+o.mode+' &nbsp;|&nbsp; '+o.pay+'</div>'+
-      '<div style="color:var(--gray-text);font-size:.72rem;margin-top:2px">⏰ '+o.time+'</div></div>';
-  });
-  document.getElementById('orders-list').innerHTML=html;
-}
-
 function renderTips(){
   document.getElementById('tips-list').innerHTML=tips.map(function(t){
     return '<div class="tip-card"><div class="tip-icon">'+t.icon+'</div>'+
@@ -887,7 +745,7 @@ function renderMedSelectGrid(){
 
 // ── TABS ──
 window.showTab=function(name,tabBtn,navBtn){
-  ['accueil','carte','pharmacies','medicaments','avis','dashboard','conseils','apropos'].forEach(function(t){
+  ['accueil','carte','pharmacies','medicaments','avis','conseils','apropos'].forEach(function(t){
     document.getElementById('tab-'+t).classList.add('hidden');
   });
   document.getElementById('tab-'+name).classList.remove('hidden');
@@ -1008,9 +866,6 @@ window.closeModal=function(id,e){
   if(!e||e.target===document.getElementById(id)) document.getElementById(id).classList.add('hidden');
 };
 
-// ── URGENCE ──
-window.callNum=function(num){window.location.href='tel:'+num;};
-
 // ── LANG ──
 window.toggleLang=function(){
   lang=lang==='fr'?'en':'fr';
@@ -1022,29 +877,6 @@ window.toggleLang=function(){
   document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+lang);});
   renderMedicaments(); renderTips(); renderMedSelectGrid();
   window.doSearch();
-};
-
-// ── DASHBOARD LOGIN ──
-var DASH_PASSWORD = 'Admin1200';
-window.dashLogin = function(){
-  var input = document.getElementById('dash-password-input');
-  var err = document.getElementById('dash-err');
-  if(input.value === DASH_PASSWORD){
-    document.getElementById('dash-login-screen').style.display = 'none';
-    document.getElementById('dash-content').style.display = 'block';
-    err.style.display = 'none';
-    input.value = '';
-    showToast('✅ Bienvenue Dr. Boubakary !');
-  } else {
-    err.style.display = 'block';
-    input.value = '';
-    input.focus();
-  }
-};
-window.dashLogout = function(){
-  document.getElementById('dash-login-screen').style.display = 'block';
-  document.getElementById('dash-content').style.display = 'none';
-  showToast('🔒 Déconnecté du dashboard');
 };
 
 // ── TOAST ──
@@ -1084,8 +916,6 @@ renderPharmacies();
 renderMedicaments();
 renderReviews();
 renderTips();
-renderStock();
-renderOrders();
 fillSelects();
 renderMedSelectGrid();
 
