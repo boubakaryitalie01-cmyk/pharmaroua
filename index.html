@@ -772,7 +772,7 @@ function initMap(){
 }
 
 // ── RENDER FUNCTIONS ──
-function stars(n){ var s=''; for(var i=1;i<=5;i++) s+=i<=Math.round(n)?'⭐':'☆'; return s+' ('+n+')'; }
+function stars(n){ return '⭐ '+n; }
 
 function renderPharmCard(p,showBtns){
   var s=showBtns===false?'':
@@ -822,7 +822,7 @@ function renderMedicaments(){
 function renderReviews(){
   var html='';
   reviews.forEach(function(r){
-    var s=''; for(var i=0;i<r.note;i++) s+='⭐';
+    var s='⭐ '+r.note;
     html+='<div class="review-card">'+
       '<div class="review-header"><div><div class="reviewer-name">'+r.nom+'</div><div class="review-pharm">'+r.pharmacie+'</div></div>'+
       '<div class="review-stars">'+s+'</div></div>'+
